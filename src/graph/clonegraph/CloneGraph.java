@@ -44,36 +44,25 @@ public class CloneGraph {
 
 
     public static Node cloneGraph( Node node) {
-        Set<Node> visited = new HashSet<>();
+        Map<Node,Node> visited = new HashMap<>();
         Node headNode = new Node();
-        StringBuffer sbf = new StringBuffer();
-        sbf.append("[");
-        cloneG(sbf, headNode, node, visited);
-        sbf.replace(sbf.length()-1, sbf.length(), "");
-        sbf.append("]");
-        System.out.println(sbf.toString());
-        return headNode;
-    }
-
-    private static Node cloneG(StringBuffer sbf, Node headNode, Node node, Set<Node> visited) {
-        if(!visited.contains(node)){
-
-            Node newNode = new Node(node.val, node.neighbors);
-            if(visited.isEmpty()){
-                headNode = newNode;
-            }
-            visited.add(node);
-            for (Node n : node.neighbors) {
-                cloneG(sbf,headNode, n, visited);
-            }
-            sbf.append("[");
-            for(Node n: node.neighbors) {
-                sbf.append(n.val+",");
-            }
-            sbf.replace(sbf.length()-1, sbf.length(), "");
-            sbf.append("],");
+        if(node!=null){
+            headNode = cloneG(headNode, node, visited);
+        }
+        else {
+            return null;
         }
         return headNode;
     }
-}
 
+    private static Node cloneG(Node newNode, Node node, Map<Node,Node> visited) {
+        if(!visited.containsKey(node)){
+            newNode = new Node(node.val);
+            visited.put(node, newNode);
+            for (Node n : node.neighbors) {
+                newNode.neighbors.add(cloneG(newNode, n, visited));
+            }
+        }
+        return visited.get(node);
+    }
+}
